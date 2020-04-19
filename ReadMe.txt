@@ -1,5 +1,5 @@
-Static Methode ExtractTextFromXmlToFile(string xmlFilePath, string longNameToSearch,string outputFilePath)  of class XmlParser is performs the actual task.
+Methode ExtractTextFromFile(string filePath, string longNameToSearchFor, string outputFilePath)  of class TextExtractor is performs the actual task.
 this method recieves 3 parameters. 
-*xmlFilePath:-Path to the source XML File
-*longNameToSearch:- Long name that we are supposed to search in file
-*outputFilePath:- Path to the Destination text File
+ /// <param name="filePath">Path to the source File.</param>
+ /// <param name="longNameToSearchFor"> Long-name that we are supposed to search in file.</param>
+ /// <param name="outputFilePath">Path to the Destination text File.</param>
