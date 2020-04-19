@@ -4,27 +4,45 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Assignment2_xmlParser
+namespace Assignment2_Parser
 {
-    class XmlParser
+    class XmlParser : IFileParser
     {
 
-        public static async Task ExtractTextFromXmlToFile(string xmlFilePath, string longNameToSearch,string outputFilePath) {
-            var extractedText = await XmlParser.ExtractTextFromXml(xmlFilePath, longNameToSearch);
-            if (!string.IsNullOrEmpty(extractedText))
+        private static readonly Object LockObj = new Object();
+        private static XmlParser instance;
+        private XmlParser()
+        {
+
+        }
+        public static XmlParser Instance
+        {
+            get
             {
-                FileUtility.SaveTextToFile(outputFilePath, extractedText);
-                Console.WriteLine($"Extracted Text Saved to File -> {outputFilePath}");
-            }
-            else {
-                Console.WriteLine($"long-name=\"{longNameToSearch}\" not found in file={xmlFilePath}.");
+                if (instance == null)
+                {
+                    lock (LockObj)
+                    {
+                        if (instance == null)
+                        {
+                            instance = new XmlParser();
+                        }
+                    }
+                }
+                return instance;
             }
         }
-        private static async Task<string> ExtractTextFromXml(string xmlFilePath, string longNameToSearch)
+
+        /// <summary>
+        /// Extracts text from an XML File based on a long-name attribute
+        /// </summary>
+        /// <param name="xmlFilePath">Path to the source XML File.</param>
+        /// <param name="longNameToSearch"> Long-name that we are supposed to search in file.</param>
+        public async Task<string> ExtractText(string filePath, string longNameToSearch)
         {
-            if (xmlFilePath is null)
+            if (filePath is null)
             {
-                throw new ArgumentNullException(nameof(xmlFilePath));
+                throw new ArgumentNullException(nameof(filePath));
             }
 
             if (longNameToSearch is null)
@@ -33,14 +51,14 @@ namespace Assignment2_xmlParser
             }
 
             XmlReaderSettings settings = new XmlReaderSettings() { IgnoreWhitespace = false };
-            using var reader = XmlReader.Create(xmlFilePath, settings);
-            var result =await Task.Run(()=>XmlParser.ExtractTextFromXmlReader(reader, longNameToSearch));
+            using var reader = XmlReader.Create(filePath, settings);
+            var result =await Task.Run(()=>this.ExtractTextFromXmlReader(reader, longNameToSearch));
             //Console.WriteLine("From Method");
             //Console.WriteLine(result);
             return result.ToString();
         }
 
-        private static StringBuilder ExtractTextFromXmlReader(XmlReader reader,string longNameToSearch)
+        private StringBuilder ExtractTextFromXmlReader(XmlReader reader,string longNameToSearch)
         {
             StringBuilder result = new StringBuilder();
             reader.MoveToContent();
