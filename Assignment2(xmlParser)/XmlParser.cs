@@ -11,9 +11,14 @@ namespace Assignment2_Parser
 
         private static readonly Object LockObj = new Object();
         private static XmlParser instance;
+        public event EventHandler textExtracted;
         private XmlParser()
         {
 
+        }
+        internal virtual void OnLineExtraction(string eventData)
+        {
+            textExtracted?.Invoke(this, new StringEventArgs(eventData));
         }
         public static XmlParser Instance
         {
@@ -38,7 +43,7 @@ namespace Assignment2_Parser
         /// </summary>
         /// <param name="xmlFilePath">Path to the source XML File.</param>
         /// <param name="longNameToSearch"> Long-name that we are supposed to search in file.</param>
-        public async Task<string> ExtractText(string filePath, string longNameToSearch)
+        public async Task ExtractText(string filePath, string longNameToSearch)
         {
             if (filePath is null)
             {
@@ -53,19 +58,20 @@ namespace Assignment2_Parser
             XmlReaderSettings settings = new XmlReaderSettings() { IgnoreWhitespace = false };
             using var reader = XmlReader.Create(filePath, settings);
             var result =await Task.Run(()=>this.ExtractTextFromXmlReader(reader, longNameToSearch));
-            //Console.WriteLine("From Method");
-            //Console.WriteLine(result);
-            return result.ToString();
+            if (result)
+            {
+                Console.WriteLine("Text Extracted Successfully!");
+            }
         }
 
-        private StringBuilder ExtractTextFromXmlReader(XmlReader reader,string longNameToSearch)
+        private bool ExtractTextFromXmlReader(XmlReader reader,string longNameToSearch)
         {
-            StringBuilder result = new StringBuilder();
             reader.MoveToContent();
             //reader.ReadToDescendant("Section");//Content
             var riskFactorTagFound = false;
             var endSearch = false;
             var skippedATag = false;
+            var textFound = false;
             while (!reader.EOF && !endSearch)
             {
                 switch (reader.NodeType)
@@ -91,7 +97,10 @@ namespace Assignment2_Parser
                     case XmlNodeType.Text: //Display the text in each element.
                         if (riskFactorTagFound)
                         {
-                            result.Append(reader.Value);
+                            if (!string.IsNullOrEmpty(reader.Value)) {
+                                this.OnLineExtraction(reader.Value);
+                                textFound = true;
+                            }
                             //Console.WriteLine("Text :-" + reader.Value);
                         }
                         break;
@@ -111,7 +120,7 @@ namespace Assignment2_Parser
                     skippedATag = false;
                 }
             }
-            return result;
+            return textFound;
         }
     }
 }

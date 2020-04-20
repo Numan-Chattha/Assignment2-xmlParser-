@@ -11,10 +11,11 @@ namespace Assignment2_Parser
             var longNameToSearchFor = "Risk Factors";
             var inputFilePath = @"../../../SEC-0000950123-09-019360.xml";
             var outputFilePath = @$"../../../Results({longNameToSearchFor}).txt";
-            //get Singleton instance of LocalFileHandler to store file on Local Disk
-            IOutputHandler outputHandler = LocalFileHandler.Instance;
             //get Singleton instance of XmlParser to parse XML File
             IFileParser parser = XmlParser.Instance;
+            //create instance of LocalFileHandler to store file on Local Disk
+            IOutputHandler outputHandler = new LocalFileHandler(parser, outputFilePath);
+
 
 
 

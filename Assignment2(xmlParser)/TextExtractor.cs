@@ -26,16 +26,8 @@ namespace Assignment2_Parser
         public async Task ExtractTextFromFile(string filePath, string longNameToSearchFor, string outputFilePath)
         {
 
-            var extractedText = await this.parser.ExtractText(filePath, longNameToSearchFor);
-            if (!string.IsNullOrEmpty(extractedText))
-            {
-                this.outputHandler.HandleOutput(outputFilePath, extractedText);
-                Console.WriteLine($"Extracted Text Saved to File -> {outputFilePath}");
-            }
-            else
-            {
-                Console.WriteLine($"long-name=\"{longNameToSearchFor}\" not found in file={filePath}.");
-            }
+             await this.parser.ExtractText(filePath, longNameToSearchFor);
+           
 
         }
     }

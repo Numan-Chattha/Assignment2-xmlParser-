@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 /// <summary>
 /// Summary description for Class1
@@ -11,32 +12,21 @@ namespace Assignment2_Parser
     {
         private static readonly Object LockObj = new Object();
         private static LocalFileHandler instance;
-        private LocalFileHandler()
+        public string OutputFilePath { get; set; }
+        public LocalFileHandler(IFileParser parser,string outputFilePath)
         {
-
-        }
-        public static LocalFileHandler Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    lock (LockObj)
-                    {
-                        if (instance == null)
-                        {
-                            instance = new LocalFileHandler();
-                        }
-                    }
-                }
-                return instance;
-            }
+            parser.textExtracted += HandleOutput;
+            this.OutputFilePath = outputFilePath;
         }
 
-        public void HandleOutput(string outputFilePath, string text)
+
+        public void HandleOutput(Object sender, EventArgs e)
 	    {
-		    //Console.WriteLine($"path = > {outputFilePath}, text length ={text.Length}Bytes");
-		    System.IO.File.WriteAllText(outputFilePath, text);
+            if (e is StringEventArgs) { 
+                //Console.WriteLine( "EventArgs=>>>>>>"+((StringEventArgs)e).Data);
+                File.AppendAllLines(this.OutputFilePath, new[] { "\n" + ((StringEventArgs)e).Data });
+            }
 	    }
+
     }
 }

@@ -8,6 +8,7 @@ namespace Assignment2_Parser
 {
 	public interface IFileParser
 	{
-		Task<string> ExtractText(string filePath, string longNameToSearch);
+		event EventHandler textExtracted;
+		Task ExtractText(string filePath, string longNameToSearch);
 	}
 }

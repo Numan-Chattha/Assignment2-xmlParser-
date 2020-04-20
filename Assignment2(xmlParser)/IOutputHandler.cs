@@ -8,6 +8,6 @@ namespace Assignment2_Parser
 {
 	public interface IOutputHandler
 	{
-		void HandleOutput(string fileName, string  outputText);
+		void HandleOutput(Object sender, EventArgs e);
 	}
 }
